@@ -33,6 +33,7 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - nats-queue
+      - time
 
 tests:
   git-config-test:

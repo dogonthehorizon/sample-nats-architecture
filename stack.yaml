@@ -44,6 +44,6 @@ docker:
 image:
   containers:
     - base: "ubuntu:18.04"
-      name: "dogonthehorizon/example-processor"
+      name: "dogonthehorizon/sample"
       entrypoints:
         - example-processor
