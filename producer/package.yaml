@@ -1,8 +1,8 @@
-name:                   example-processor
+name:                   producer
 version:                0.1.0.0
 synopsis:               A simple processor example using Haskell and NATS.
 #description:
-github:                 dogonthehorizon/git-config
+github:                 dogonthehorizon/simple-nats-architecture
 license:                BSD3
 author:                 Fernando Freire
 copyright:              2018 Fernando Freire
@@ -24,7 +24,7 @@ ghc-options:
   - -fwarn-incomplete-patterns
 
 executables:
-  example-processor:
+  producer:
     source-dirs:        src
     main:               Main.hs
     ghc-options:
@@ -44,7 +44,7 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - example-processor
+      - producer
       - smallcheck
       - tasty
       - tasty-discover

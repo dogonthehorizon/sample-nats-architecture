@@ -66,4 +66,4 @@ tags
 
 
 # End of https://www.gitignore.io/api/macOS,vim,haskell,git,cabal
-*.cabal
+**/*.cabal

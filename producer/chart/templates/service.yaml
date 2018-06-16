@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "example-processor.fullname" . }}
+  labels:
+    app: {{ template "example-processor.name" . }}
+    chart: {{ template "example-processor.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "example-processor.name" . }}
+    release: {{ .Release.Name }}

@@ -19,11 +19,11 @@ setup: clean
 
 _HLINT=hlint --refactor --refactor-options -i {} \;
 hlint:
-	@find {src,test} -name "*.hs" -exec $(_HLINT)
+	@find {producer,consumer}/{src,test} -name "*.hs" -exec $(_HLINT)
 
 _STYLISH=stylish-haskell -i {} \;
 stylish-haskell:
-	@find {src,test} -name "*.hs" -exec $(_STYLISH)
+	@find {producer,consumer}/{src,test} -name "*.hs" -exec $(_STYLISH)
 
 test:
 	stack test --test-arguments "--color always"

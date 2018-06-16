@@ -1,0 +1,52 @@
+name:                   consumer
+version:                0.1.0.0
+synopsis:               A simple onsumer example using Haskell and NATS.
+#description:
+github:                 dogonthehorizon/simple-nats-architecture
+license:                BSD3
+author:                 Fernando Freire
+copyright:              2018 Fernando Freire
+category:               Web,Kubernetes,NATS
+extra-source-files:
+  - README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+default-extensions:
+  - OverloadedStrings
+ghc-options:
+  - -Wall
+  - -fno-warn-partial-type-signatures
+  - -fno-warn-name-shadowing
+  - -fwarn-tabs
+  - -fwarn-unused-imports
+  - -fwarn-missing-signatures
+  - -fwarn-incomplete-patterns
+
+executables:
+  consumer:
+    source-dirs:        src
+    main:               Main.hs
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - nats-queue
+      - time
+
+tests:
+  git-config-test:
+    main: Tasty.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - consumer
+      - smallcheck
+      - tasty
+      - tasty-discover
+      - tasty-hunit
+      - tasty-smallcheck
