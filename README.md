@@ -1,4 +1,4 @@
-# example-processor
+# sample-nats-architecture
 
 A sample project demonstrating how to make use of queues with [NATS]
 in [Kubernetes] using Haskell.
