@@ -1,0 +1,7 @@
+apiVersion: nats.io/v1alpha2
+kind: NatsCluster
+metadata:
+  name: sample-cluster
+spec:
+  size: 1
+  version: "1.1.0"
