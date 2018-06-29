@@ -10,8 +10,8 @@ import Data.Time.LocalTime (getZonedTime)
 
 main :: IO ()
 main = do
-  host <- fromJust <$> Env.lookupEnv "COHEE_CLUSTER_SERVICE_HOST"
-  port <- fromJust <$> Env.lookupEnv "COHEE_CLUSTER_SERVICE_PORT"
+  host <- fromJust <$> Env.lookupEnv "SAMPLE_CLUSTER_SERVICE_HOST"
+  port <- fromJust <$> Env.lookupEnv "SAMPLE_CLUSTER_SERVICE_PORT"
   ip   <- fromJust <$> Env.lookupEnv "POD_IP"
   nats <- connect ("nats://" <> host <> ":" <> port)
 

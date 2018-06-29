@@ -26,4 +26,22 @@ stylish-haskell:
 	@find {producer,consumer}/{src,test} -name "*.hs" -exec $(_STYLISH)
 
 test:
-	stack test --test-arguments "--color always"
+	@stack test --test-arguments "--color always"
+
+minikube-expose-registry:  # This should only be run once
+	@minikube addons enable registry && \
+		kubectl --namespace kube-system \
+			expose service registry \
+				--name exposed-registry \
+				--type=NodePort \
+				--target-port=5000
+
+DOCKER_REGISTRY=$(shell minikube service -n kube-system exposed-registry --url | awk -F/ '{ print $$3 }')
+
+tag:
+	@docker tag dogonthehorizon/$(I):$(V) $(DOCKER_REGISTRY)/dogonthehorizon/$(I):$(V)
+
+push:
+	@docker push $(DOCKER_REGISTRY)/dogonthehorizon/$(I):$(V)
+
+deploy: tag push
