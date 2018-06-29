@@ -34,6 +34,7 @@ executables:
     dependencies:
       - nats-queue
       - time
+      - bytestring
 
 tests:
   git-config-test:

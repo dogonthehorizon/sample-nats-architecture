@@ -2,32 +2,28 @@ module Main where
 
 import Data.Monoid ((<>))
 import Data.Maybe (fromJust)
-import Network.Nats (connect, subscribe, NatsSID)
+import Network.Nats (connect, publish, Nats)
 import System.Environment as Env
 import Control.Concurrent (threadDelay)
 import System.IO (writeFile)
 import Data.Time.LocalTime (getZonedTime)
+import Data.ByteString.Lazy.Char8 (ByteString)
+import qualified Data.ByteString.Lazy.Char8 as BS
 
 main :: IO ()
 main = do
-  host <- fromJust <$> Env.lookupEnv "COHEE_CLUSTER_SERVICE_HOST"
-  port <- fromJust <$> Env.lookupEnv "COHEE_CLUSTER_SERVICE_PORT"
+  host <- fromJust <$> Env.lookupEnv "SAMPLE_CLUSTER_SERVICE_HOST"
+  port <- fromJust <$> Env.lookupEnv "SAMPLE_CLUSTER_SERVICE_PORT"
   ip   <- fromJust <$> Env.lookupEnv "POD_IP"
   nats <- connect ("nats://" <> host <> ":" <> port)
-
-  print ("Subscribing to nats queue: " <> host <> ":" <> port)
-  natsId <- subscribe nats "messages" Nothing $
-    \_ _ msg _ -> do    -- The parameters are (sid, subject, message, reply_subject)
-      now <- getZonedTime
-      putStrLn $ show now <> " | " <> ip <> ": " <> show msg
-
-  -- We must loop infinitely because otherwise `subscribe` returns immediately
-  -- and the container exits. This is not the behavior we want!
-  loopUntilFailure natsId
+  forever nats ip
  where
-   loopUntilFailure :: NatsSID -> IO ()
-   loopUntilFailure id = do
-     writeFile "/tmp/healthy" $ show id
+   forever :: Nats -> String -> IO ()
+   forever conn ip = do
+     let msg = "Hello World, from " <> (BS.pack ip)
+     publish conn "messages" msg
+
+     BS.writeFile "/tmp/healthy" msg
      -- Wait 10 seconds before writing the healthy file again
      threadDelay 10000000
-     loopUntilFailure id
+     forever conn ip
