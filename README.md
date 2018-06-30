@@ -123,7 +123,7 @@ for images in this project with the `tag`, `publish` and `publish` targets:
 make tag I=sample-producer V=latest
 
 # Publish it to Minikube's registry
-make publish I=sample-producer V=latest
+make push I=sample-producer V=latest
 
 # Combine the previous two steps into one make target
 make publish I=sample-producer V=latest
