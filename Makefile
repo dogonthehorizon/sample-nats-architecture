@@ -44,4 +44,9 @@ tag:
 push:
 	@docker push $(DOCKER_REGISTRY)/dogonthehorizon/$(I):$(V)
 
-deploy: tag push
+publish: tag push
+
+deploy:
+	helm upgrade --install \
+		$(N) $(N)/chart \
+		--values $(N)/chart/values.yaml

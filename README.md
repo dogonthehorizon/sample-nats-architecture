@@ -10,6 +10,7 @@ in [Kubernetes] using [Haskell] workers.
     - [Quickstart](#quickstart)
     - [Publishing Images to Minikube's Registry](#publishing-images-to-minikubes-registry)
 - [Initial NATS Configuration](#initial-nats-configuration)
+- [Deploying Workers](#deploying-workers)
 
 ## Requirements
 
@@ -46,8 +47,8 @@ the component and version like so:
 stack image container
 
 # Push the latest images to our Minikube registry
-make deploy I=sample-producer V=latest
-make deploy I=sample-consumer V=latest
+make publish I=sample-producer V=latest
+make publish I=sample-consumer V=latest
 ```
 
 The next section explains what this target is doing.
@@ -82,6 +83,32 @@ kubectl --namespace kube-system \
 minikube service --namespace kube-system exposed-registry --url
 ```
 
+In order for us to install images within the cluster using the in-cluster DNS
+name we'll want to make sure the `kube-dns` plugin is enabled:
+
+```
+minikube addons enable kube-dns
+```
+
+Due to [this issue][dns-issue] we'll need to manually update [Minikube]'s
+DNS configuration in order to resolve correctly:
+
+
+```bash
+# Record this value, we will need it when modifying Minikube's DNS config
+echo $(kubectl get svc kube-dns -n kube-system -o jsonpath='{.spec.clusterIP}')
+```
+
+```bash
+minikube ssh
+sudo vi /etc/systemd/resolved.conf
+# Update the file with DNS=${IP_FROM_PREVIOUS_KUBECTL_COMMAND}
+sudo systemctl restart systemd-resolved
+# Verify DNS is working properly now
+nslookup registry.kube-system.svc.cluster.local
+exit
+```
+
 Next, we'll need to tell Docker about our local registry using the URL
 from the previous step. Since [Minikube] is exposing the registry without
 TLS we'll need to add an [insecure registry] configuration. For those using
@@ -89,7 +116,7 @@ TLS we'll need to add an [insecure registry] configuration. For those using
 `Preferences > Daemon > Insecure registries`.
 
 We're now ready to publish images to our local registry. We can do so easily
-for images in this project with the `tag`, `publish` and `deploy` targets:
+for images in this project with the `tag`, `publish` and `publish` targets:
 
 ```bash
 # Tag the latest sample-producer image with Minikube's registry information
@@ -99,7 +126,7 @@ make tag I=sample-producer V=latest
 make publish I=sample-producer V=latest
 
 # Combine the previous two steps into one make target
-make deploy I=sample-producer V=latest
+make publish I=sample-producer V=latest
 ```
 
 The logic behind these targets can be found in `./Makefile`.
@@ -123,6 +150,22 @@ first cluster:
 kubectl apply -f inf/sample-cluster.yaml
 ```
 
+## Deploying Workers
+
+The workers in this project are built using [Stack] and deployed using [Helm].
+The build configuration for containers can be found in [stack.yaml](./stack.yaml)
+and the deploy configuration for each worker can be found in the
+`{worker}/chart` directory.
+
+The `deploy` make target makes use of [Helm] to upgrade to the latest published
+image using the directory name of the work (e.g. `producer` or `consumer`):
+
+```bash
+make deploy N=producer
+```
+
+You should see logs populate for both workers with messages!
+
 [Docker]: https://www.docker.com/community-edition
 [Stack]: https://www.haskellstack.org/
 [Helm]: https://helm.sh
@@ -140,3 +183,4 @@ kubectl apply -f inf/sample-cluster.yaml
 [expose]: https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/
 [insecure registry]: https://docs.docker.com/registry/insecure/
 [dForM]: https://store.docker.com/editions/community/docker-ce-desktop-mac
+[dns-issue]: https://github.com/kubernetes/minikube/issues/2162

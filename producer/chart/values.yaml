@@ -5,9 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: dogonthehorizon/sample-example-processor
+  registry: registry.kube-system.svc.cluster.local
+  name: dogonthehorizon/sample-producer
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 service:
   type: NodePort
